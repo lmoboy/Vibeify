@@ -4,22 +4,42 @@ model = YOLO("C:\\laragon\\www\\Vibeify\\yoloV8Engine\\yolo11n-cls.pt", task="cl
 app = FastAPI()
 
 def run_picture(picture):
-    return model.predict(source=picture, task="classify", stream=False, imgsz=640, conf=0.7)
+    model_result = model.predict(source=picture, stream=False, imgsz=640, conf=0.5)
+    output = {}
+    for result in model_result:
+        keyed_names = result.names
+        keyed_probs = result.probs.top1
+        output = keyed_names[keyed_probs]
+    return output
 
 
 @app.post('/predict')
-def upload(file: UploadFile = File(...)):
+async def upload(file: UploadFile = File(...)):
+    result = ""
     try:
-        with open(file.filename, 'wb') as f:
+        with open(f"storage/app/private/{file.filename}", 'xb') as f:
             while contents := file.file.read(1024 * 1024):
                 f.write(contents)
-    except Exception:
-        raise HTTPException(status_code=500, detail='Something went wrong')
+            result = run_picture(f.name)
+            
+
+    except Exception as err:
+        raise HTTPException(status_code=500, detail='Something went wrong: ' + str(err))
     finally:
         file.file.close()
 
-    return {"message": f"Successfully uploaded {file.filename}"}
+    return {'success':f"Successfully uploaded {file.filename}", 'result':str(result)}
 
 if __name__ == "__main__":
     import uvicorn
+    from fastapi.middleware.cors import CORSMiddleware
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # Allows all origins
+        allow_credentials=True,
+        allow_methods=["*"],  # Allows all methods
+        allow_headers=["*"],  # Allows all headers
+    )
+
     uvicorn.run(app, host="127.0.0.1", port=6969)
