@@ -53,7 +53,7 @@ export default function CameraDisplay({ onSnapshot }) {
         if (continuous) {
             const interval = setInterval(() => {
                 takeSnapshot();
-            }, 1000);
+            }, 200);
             return () => clearInterval(interval);
         }
     }, [continuous]);
