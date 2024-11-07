@@ -1,0 +1,5 @@
+train: \images\train
+val: \images\val
+test: \images\train
+nc: 7
+names: ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
