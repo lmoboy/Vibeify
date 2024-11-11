@@ -1,33 +1,39 @@
 import {useState} from "react";
 
+/**
+ * A component that fetches a list of Spotify playlists based on the provided emotion, and displays them.
+ *
+ * @param {{emotion: string[], accessKey: string}} props
+ * @param {string[]} props.emotion - A list of emotions to search for.
+ * @param {string} props.accessKey - The user's Spotify access key.
+ * @returns {JSX.Element}
+ */
 export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
-    const [playlist, setPlaylist] = useState(null);
+    const [items, setItems] = useState(null);
 
-    function onRequest() {
-        const data = new FormData();
+    const requestPlaylists = () => {
         const query = emotion.join("&genre:");
-        data.append("access_key", accessKey);
         fetch(
             `https://api.spotify.com/v1/search?q=genre:${query}&type=playlist&limit=6`,
             {
                 method: "GET",
                 headers: {
-                    Authorization: "Bearer " + accessKey,
+                    Authorization: `Bearer ${accessKey}`,
                 },
             }
         )
             .then((res) => res.json())
-            .then((res) => setPlaylist(res.playlists.items));
-    }
+            .then((res) => setItems(res.playlists.items));
+    };
 
     return (
-        <div>
-            {playlist ? (
+        <div className="space-y-4">
+            {items ? (
                 <>
-                    <button onClick={onRequest}> Re-request </button>
+                    <button onClick={requestPlaylists}>Re-request</button>
                     <p className="text-2xl font-bold">Suggested Playlist</p>
                     <div className="grid grid-cols-3 gap-2">
-                        {playlist.map((item) => (
+                        {items.map((item) => (
                             <a
                                 href={item.external_urls.spotify}
                                 target="_blank"
@@ -43,7 +49,7 @@ export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
                     </div>
                 </>
             ) : (
-                <button onClick={onRequest}> Request </button>
+                <button onClick={requestPlaylists}>Request</button>
             )}
         </div>
     );
