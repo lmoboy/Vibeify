@@ -1,8 +1,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import CameraDisplay from "@/Components/CameraDisplay";
 
-import { Head } from "@inertiajs/react";
-import { useState, useEffect, useRef } from "react";
+import {Head} from "@inertiajs/react";
+import {useEffect, useRef, useState} from "react";
 import SuggestedPlaylist from "@/Components/SuggestedPlaylist";
 
 export default function Dashboard() {
@@ -43,10 +43,22 @@ export default function Dashboard() {
             .then((res) => setEmotion(res.result));
     };
 
+    function handleSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        fetch("http://127.0.0.1:6969/predict", {
+            method: "POST",
+            body: formData,
+        })
+            .then((res) => res.json())
+            .then((res) => setEmotion(res.result));
+    }
+
     useEffect(() => {
         fetch(route("spotify.access"))
             .then((res) => res.json())
-            .then((res) => setAccessToken(res.access_token));
+            .then((res) => setAccessToken(res['access_token']));
     }, []);
 
     return (
@@ -65,17 +77,18 @@ export default function Dashboard() {
                         <div className="p-6 flex flex-col justify-center items-center text-gray-900 dark:text-gray-100">
                             <CameraDisplay onSnapshot={handleSnapshot} />
 
-                            {/* <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit}>
                                 <input
                                     type="file"
                                     ref={fileInputRef}
+
                                     onChange={(event) => setSelectedFile(event.target.files[0])}
                                     accept=".jpg, .jpeg, .png"
                                 />
                                 <button type="submit" className="mt-4">
                                     Detect Emotion
                                 </button>
-                            </form> */}
+                            </form>
                             <h2 className="mt-4">{emotion}</h2>
                             <p>you might enjoy these genres</p>
                             <code>

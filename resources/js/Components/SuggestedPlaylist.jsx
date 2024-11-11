@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState} from "react";
 
 export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
     const [playlist, setPlaylist] = useState(null);
