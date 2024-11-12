@@ -10,11 +10,11 @@ import {useState} from "react";
  */
 export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
     const [items, setItems] = useState(null);
-
+    const [offset, setOffset] = useState(Math.floor(Math.random() * 50));
     const requestPlaylists = () => {
         const query = emotion.join("&genre:");
         fetch(
-            `https://api.spotify.com/v1/search?q=genre:${query}&type=playlist&limit=6`,
+            `https://api.spotify.com/v1/search?q=genre:${query}&type=playlist&limit=50&offset=${offset}`,
             {
                 method: "GET",
                 headers: {
@@ -23,7 +23,12 @@ export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
             }
         )
             .then((res) => res.json())
-            .then((res) => setItems(res.playlists.items));
+            .then((res) =>
+                setItems(
+                    res.playlists.items.sort(() => 0.5 - Math.random()).slice(0, 3)
+                )
+            );
+        setOffset(Math.floor(Math.random() * 50));
     };
 
     return (

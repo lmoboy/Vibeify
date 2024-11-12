@@ -15,6 +15,23 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('storage/{filename}', function ($filename)
+{
+    $path = storage_path('app/public/' . $filename);
+
+    if (!File::exists($path)) {
+        abort(404);
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+})->name('storage');
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -24,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/home', [SpotifyAPI::class, 'home'])->name('spotify.home');
 
 
     Route::get('/access', [SpotifyAPI::class, 'index'])->name('spotify.access');

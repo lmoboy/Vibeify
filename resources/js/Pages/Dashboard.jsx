@@ -90,17 +90,17 @@ export default function Dashboard() {
                         <div className="p-6 flex flex-col justify-center items-center text-gray-900 dark:text-gray-100">
                             <CameraDisplay onSnapshot={handleImageSnapshot}/>
 
-                            <form onSubmit={handleFormSubmit}>
-                                <input
-                                    type="file"
-                                    ref={fileInputElement}
-                                    onChange={(event) => setUploadedFile(event.target.files[0])}
-                                    accept=".jpg, .jpeg, .png"
-                                />
-                                <button type="submit" className="mt-4">
-                                    Detect Emotion
-                                </button>
-                            </form>
+                            {/*<form onSubmit={handleFormSubmit}>*/}
+                            {/*    <input*/}
+                            {/*        type="file"*/}
+                            {/*        ref={fileInputElement}*/}
+                            {/*        onChange={(event) => setUploadedFile(event.target.files[0])}*/}
+                            {/*        accept=".jpg, .jpeg, .png"*/}
+                            {/*    />*/}
+                            {/*    <button type="submit" className="mt-4">*/}
+                            {/*        Detect Emotion*/}
+                            {/*    </button>*/}
+                            {/*</form>*/}
                             <h2 className="mt-4">{detectedEmotion}</h2>
                             <p>You might enjoy these genres:</p>
                             <code>

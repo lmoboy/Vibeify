@@ -9,7 +9,7 @@ export default function CameraDisplay({ onSnapshot }) {
     useEffect(() => {
         navigator.mediaDevices.enumerateDevices().then((devices) => {
             const cameras = devices.filter((device) => device.kind === "videoinput");
-            if (cameras.length > 0) {
+            if (cameras.length === 1) {
                 setSelectedCameraId(cameras[0].deviceId);
             }
             setAvailableCameras(cameras);
@@ -58,7 +58,7 @@ export default function CameraDisplay({ onSnapshot }) {
     }, [isContinuous]);
 
     return (
-        <div className="flex w-fit h-full relative items-center justify-center dark:text-gray-700">
+        <div className="flex  w-fit h-full relative items-center justify-center dark:text-gray-700">
             <video
                 ref={videoElementRef}
                 autoPlay

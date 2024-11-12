@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+#jobana_button {
+    box-shadow: -10px -10px #6AE06A;
+    padding: 10px;
+    margin: 10px;
+    background-color: #2ca02c;
+}
