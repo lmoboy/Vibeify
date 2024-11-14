@@ -46,36 +46,31 @@ export default function UpdatePasswordForm({ className = '' }) {
 
     return (
         <section className={className}>
-            <header>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <header className="space-y-1">
+                <h2 className="text-lg font-medium text-primary">
                     Update Password
                 </h2>
-
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Ensure your account is using a long, random password to stay
-                    secure.
+                <p className="text-sm text-neutral-400">
+                    Ensure your account is using a long, random password to stay secure.
                 </p>
             </header>
 
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
+            <form onSubmit={updatePassword} className="mt-6 space-y-4">
                 <div>
                     <InputLabel
                         htmlFor="current_password"
                         value="Current Password"
+                        className="text-neutral-200"
                     />
-
                     <TextInput
                         id="current_password"
                         ref={currentPasswordInput}
                         value={data.current_password}
-                        onChange={(e) =>
-                            setData('current_password', e.target.value)
-                        }
+                        onChange={(e) => setData('current_password', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full bg-dark border-neutral-700 focus:border-primary text-neutral-200"
                         autoComplete="current-password"
                     />
-
                     <InputError
                         message={errors.current_password}
                         className="mt-2"
@@ -83,18 +78,20 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="New Password" />
-
+                    <InputLabel 
+                        htmlFor="password" 
+                        value="New Password" 
+                        className="text-neutral-200"
+                    />
                     <TextInput
                         id="password"
                         ref={passwordInput}
                         value={data.password}
                         onChange={(e) => setData('password', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full bg-dark border-neutral-700 focus:border-primary text-neutral-200"
                         autoComplete="new-password"
                     />
-
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
@@ -102,37 +99,41 @@ export default function UpdatePasswordForm({ className = '' }) {
                     <InputLabel
                         htmlFor="password_confirmation"
                         value="Confirm Password"
+                        className="text-neutral-200"
                     />
-
                     <TextInput
                         id="password_confirmation"
                         value={data.password_confirmation}
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
+                        onChange={(e) => setData('password_confirmation', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full bg-dark border-neutral-700 focus:border-primary text-neutral-200"
                         autoComplete="new-password"
                     />
-
                     <InputError
                         message={errors.password_confirmation}
                         className="mt-2"
                     />
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                <div className="mt-6 flex items-center gap-4">
+                    <PrimaryButton 
+                        disabled={processing}
+                        className="bg-primary hover:bg-primary-dark focus:bg-primary-dark active:bg-primary-dark"
+                    >
+                        Update Password
+                    </PrimaryButton>
 
                     <Transition
                         show={recentlySuccessful}
-                        enter="transition ease-in-out"
+                        enter="transition ease-in-out duration-300"
                         enterFrom="opacity-0"
-                        leave="transition ease-in-out"
+                        enterTo="opacity-100"
+                        leave="transition ease-in-out duration-300"
+                        leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Saved.
+                        <p className="text-sm text-neutral-400">
+                            Password updated successfully.
                         </p>
                     </Transition>
                 </div>
