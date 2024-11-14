@@ -1,10 +1,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import CameraDisplay from "@/Components/CameraDisplay";
-
-import {Head} from "@inertiajs/react";
-import {useEffect, useRef, useState} from "react";
+import { Head } from "@inertiajs/react";
+import { useEffect, useRef, useState } from "react";
 import SuggestedPlaylist from "@/Components/SuggestedPlaylist";
-
 
 /**
  * The main dashboard page.
@@ -19,15 +17,15 @@ import SuggestedPlaylist from "@/Components/SuggestedPlaylist";
  * @return {JSX.Element}
  */
 export default function Dashboard() {
-    const [detectedEmotion, setDetectedEmotion] = useState();
+    const [detectedEmotion, setDetectedEmotion] = useState({});
+    const [exectime, setExectime] = useState(0);
     const [spotifyAccessToken, setSpotifyAccessToken] = useState("");
     const [uploadedFile, setUploadedFile] = useState(null);
-
     const fileInputElement = useRef(null);
 
     const emotionToGenresMap = {
         surprise: ["electronic", "dance", "hip-hop"],
-        sad: ["ballad", "blues", "jazz"],
+        sad: ["ballad", "blues", "jazz"],        
         fear: [
             "black-metal",
             "death-metal",
@@ -53,19 +51,13 @@ export default function Dashboard() {
             body: formData,
         })
             .then((response) => response.json())
-            .then((data) => setDetectedEmotion(data.result));
+            .then((data) => setDetectedEmotion(data));
     };
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData();
         formData.append("file", uploadedFile);
-        fetch("http://127.0.0.1:6969/predict", {
-            method: "POST",
-            body: formData,
-        })
-            .then((response) => response.json())
-            .then((data) => setDetectedEmotion(data.result));
     };
 
     useEffect(() => {
@@ -77,46 +69,77 @@ export default function Dashboard() {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Dashboard
+                <h2 className="text-xl font-semibold leading-tight text-primary">
+                    Mood Detection
                 </h2>
             }
         >
             <Head title="Dashboard" />
 
             <div className="py-12">
-                <div className="max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden h-auto w-fit bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
-                        <div className="p-6 flex flex-col justify-center items-center text-gray-900 dark:text-gray-100">
-                            <CameraDisplay onSnapshot={handleImageSnapshot}/>
-
-                            {/*<form onSubmit={handleFormSubmit}>*/}
-                            {/*    <input*/}
-                            {/*        type="file"*/}
-                            {/*        ref={fileInputElement}*/}
-                            {/*        onChange={(event) => setUploadedFile(event.target.files[0])}*/}
-                            {/*        accept=".jpg, .jpeg, .png"*/}
-                            {/*    />*/}
-                            {/*    <button type="submit" className="mt-4">*/}
-                            {/*        Detect Emotion*/}
-                            {/*    </button>*/}
-                            {/*</form>*/}
-                            <h2 className="mt-4">{detectedEmotion}</h2>
-                            <p>You might enjoy these genres:</p>
-                            <code>
-                                {emotionToGenresMap[detectedEmotion]
-                                    ? emotionToGenresMap[detectedEmotion].join(", ")
-                                    : ""}
-                            </code>
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div className="grid gap-6 md:grid-cols-2">
+                        {/* Camera Section */}
+                        <div className="overflow-hidden rounded-lg bg-dark-lighter p-6 shadow-lg">
+                            <h3 className="mb-4 text-lg font-medium text-primary">
+                                Capture Your Mood
+                            </h3>
+                            <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-lg bg-dark-darker">
+                                <CameraDisplay onSnapshot={handleImageSnapshot} />
+                            </div>
+                            <div className="mt-4 flex items-center justify-between">
+                                <button
+                                    onClick={() => fileInputElement.current?.click()}
+                                    className="rounded-lg border border-primary bg-transparent px-4 py-2 text-primary transition-colors hover:bg-primary hover:text-dark"
+                                >
+                                    Upload Image
+                                </button>
+                                <input
+                                    type="file"
+                                    ref={fileInputElement}
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={(e) => setUploadedFile(e.target.files[0])}
+                                />
+                                {exectime > 0 && (
+                                    <span className="text-sm text-gray-400">
+                                        Processing time: {exectime.toFixed(2)}s
+                                    </span>
+                                )}
+                            </div>
                         </div>
-                        {detectedEmotion && spotifyAccessToken ? (
-                            <SuggestedPlaylist
-                                emotion={emotionToGenresMap[detectedEmotion]}
-                                accessKey={spotifyAccessToken}
-                            />
-                        ) : (
-                            <h2>Take a picture and we'll do the rest</h2>
-                        )}
+
+                        {/* Results Section */}
+                        <div className="overflow-hidden rounded-lg bg-dark-lighter p-6 shadow-lg">
+                            <h3 className="mb-4 text-lg font-medium text-primary">
+                                Your Mood Results
+                            </h3>
+                            {detectedEmotion && detectedEmotion.result ? (
+                                <div className="space-y-4">
+                                    <div className="rounded-lg bg-dark-darker p-4">
+                                        <div className="flex items-center justify-center">
+                                            <span className="text-2xl font-semibold capitalize text-primary">
+                                                {detectedEmotion.result}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="rounded-lg bg-dark-darker p-4">
+                                        <h4 className="mb-4 text-gray-300">Suggested Playlists:</h4>
+                                        <SuggestedPlaylist
+                                            emotion={emotionToGenresMap[detectedEmotion['result']]}
+                                            accessKey={spotifyAccessToken}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex h-[300px] items-center justify-center rounded-lg bg-dark-darker">
+                                    <p className="text-gray-400">
+                                        Take or upload a photo to see your mood analysis
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

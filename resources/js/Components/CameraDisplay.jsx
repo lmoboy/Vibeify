@@ -52,13 +52,13 @@ export default function CameraDisplay({ onSnapshot }) {
 
     useEffect(() => {
         if (isContinuous) {
-            const intervalId = setInterval(takeSnapshot, 200);
+            const intervalId = setInterval(takeSnapshot, 500);
             return () => clearInterval(intervalId);
         }
     }, [isContinuous]);
 
     return (
-        <div className="flex  w-fit h-full relative items-center justify-center dark:text-gray-700">
+        <div className="flex  w-auto h-auto relative items-center justify-center dark:text-gray-700">
             <video
                 ref={videoElementRef}
                 autoPlay
@@ -77,7 +77,7 @@ export default function CameraDisplay({ onSnapshot }) {
             </select>
             <button
                 onClick={takeSnapshot}
-                className="bg-black bg-opacity-50 text-white absolute bottom-0 left-1/2 transform -translate-x-1/2"
+                className="bg-transparent text-white absolute bottom-0 left-1/2 transform -translate-x-1/2"
             >
                 <svg
                     fill="#ffffff"
@@ -93,9 +93,9 @@ export default function CameraDisplay({ onSnapshot }) {
             </button>
             <button
                 onClick={() => setIsContinuous((prev) => !prev)}
-                className="bg-black bg-opacity-50 text-white absolute bottom-0 right-1/2 transform -translate-x-1/2"
+                className="bg-black bg-opacity-50 text-white absolute bottom-0 right-0 transform -translate-x-1/2"
             >
-                {isContinuous ? "Stop Continuous" : "Start Continuous"}
+                {isContinuous ? "Stop" : "Start"}
             </button>
         </div>
     );
