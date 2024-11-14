@@ -2,16 +2,16 @@ import { useState, useEffect, useRef } from "react";
 
 export default function CameraDisplay({ onSnapshot }) {
     const [availableCameras, setAvailableCameras] = useState([]);
-    const [selectedCameraId, setSelectedCameraId] = useState(0);
+    const [selectedCameraId, setSelectedCameraId] = useState(null);
     const [isContinuous, setIsContinuous] = useState(false);
     const videoElementRef = useRef(null);
 
     useEffect(() => {
         navigator.mediaDevices.enumerateDevices().then((devices) => {
             const cameras = devices.filter((device) => device.kind === "videoinput");
-            if (cameras.length === 1) {
+            if(!selectedCameraId)
                 setSelectedCameraId(cameras[0].deviceId);
-            }
+            
             setAvailableCameras(cameras);
         });
 

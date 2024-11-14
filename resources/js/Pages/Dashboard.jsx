@@ -68,11 +68,7 @@ export default function Dashboard() {
 
     return (
         <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-primary">
-                    Mood Detection
-                </h2>
-            }
+            
         >
             <Head title="Dashboard" />
 
