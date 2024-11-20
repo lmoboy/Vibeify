@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SpotifyAPI;
+use App\Models\History;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -41,10 +44,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/home', [SpotifyAPI::class, 'home'])->name('spotify.home');
+    Route::middleware('verified')->group(function () {
+        Route::get('/home', [SpotifyAPI::class, 'home'])->name('spotify.home');
+        Route::get('/access', [SpotifyAPI::class, 'index'])->name('spotify.access');
 
-
-    Route::get('/access', [SpotifyAPI::class, 'index'])->name('spotify.access');
+        // History routes
+        Route::post('/history', [HistoryController::class, 'store'])->name('history.store');
+        Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
+        Route::get('/history/mood/{mood}', [HistoryController::class, 'getByMood'])->name('history.by-mood');
+        Route::delete('/history/{history}', [HistoryController::class, 'destroy'])->name('history.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';
