@@ -15,7 +15,8 @@ class History extends Model
         'playlist_id',
         'playlist_name',
         'mood',
-        'playlist_url'
+        'playlist_url',
+        'cover_url'
     ];
 
     public function user()

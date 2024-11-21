@@ -44,16 +44,20 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::middleware('verified')->group(function () {
-        Route::get('/home', [SpotifyAPI::class, 'home'])->name('spotify.home');
-        Route::get('/access', [SpotifyAPI::class, 'index'])->name('spotify.access');
 
-        // History routes
-        Route::post('/history', [HistoryController::class, 'store'])->name('history.store');
-        Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
-        Route::get('/history/mood/{mood}', [HistoryController::class, 'getByMood'])->name('history.by-mood');
-        Route::delete('/history/{history}', [HistoryController::class, 'destroy'])->name('history.destroy');
-    });
+    Route::get('/history/all', [HistoryController::class, 'index'])->name('history.index');
+    Route::post('/history', [HistoryController::class, 'store'])->name('history.store');
+    Route::get('/history/mood/{mood}', [HistoryController::class, 'getByMood'])->name('history.mood');
+    Route::delete('/history/{history}', [HistoryController::class, 'destroy'])->name('history.destroy');
+
+    Route::get('/home', [SpotifyAPI::class, 'home'])->name('spotify.home');
+    Route::get('/access', [SpotifyAPI::class, 'index'])->name('spotify.access');
+
+    // History route for the frontend page only
+    Route::get('/history', function () {
+        return Inertia::render('History');
+    })->name('history.show');
+
 });
 
 require __DIR__.'/auth.php';

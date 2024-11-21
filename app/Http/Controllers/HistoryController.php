@@ -22,6 +22,7 @@ class HistoryController extends Controller
             'playlist_id' => 'required|string',
             'playlist_name' => 'required|string',
             'playlist_url' => 'required|string',
+            'cover_url' => 'required|string',
             'mood' => 'required|string',
         ]);
 
@@ -30,6 +31,7 @@ class HistoryController extends Controller
             'playlist_id' => $validated['playlist_id'],
             'playlist_name' => $validated['playlist_name'],
             'playlist_url' => $validated['playlist_url'],
+            'cover_url' => $validated['cover_url'],
             'mood' => $validated['mood'],
         ]);
 

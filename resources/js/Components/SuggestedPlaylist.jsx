@@ -12,6 +12,8 @@ export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
     const [items, setItems] = useState(null);
     const [offset, setOffset] = useState(Math.floor(Math.random() * 50));
     const [isLoading, setIsLoading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveError, setSaveError] = useState(null);
 
     const requestPlaylists = () => {
         setIsLoading(true);
@@ -23,7 +25,7 @@ export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
                 headers: {
                     Authorization: `Bearer ${accessKey}`,
                 },
-            }
+            }   
         )
             .then((res) => res.json())
             .then((res) => {
@@ -38,20 +40,23 @@ export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
         setOffset(Math.floor(Math.random() * 50));
     };
 
-    const handleSave = (playlist) => {
-        fetch('/history', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            },
-            body: JSON.stringify({
+    const handleSave = async (playlist) => {
+        setIsSaving(true);
+        setSaveError(null);
+        
+        try {
+            await axios.post(route('history.store'), {
                 playlist_id: playlist.id,
                 playlist_name: playlist.name,
                 playlist_url: playlist.external_urls.spotify,
+                cover_url: playlist.images[0]?.url || null,
                 mood: emotion[0]
-            })
-        });
+            });
+            setIsSaving(false);
+        } catch (err) {
+            setSaveError('Failed to save playlist');
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -99,11 +104,15 @@ export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
                                         </a>
                                         <button
                                             onClick={() => handleSave(item)}
-                                            className="flex-1 rounded-lg border border-primary bg-transparent px-4 py-2 text-sm font-medium text-primary hover:bg-primary hover:text-dark"
+                                            disabled={isSaving}
+                                            className="flex-1 rounded-lg border border-primary bg-transparent px-4 py-2 text-sm font-medium text-primary hover:bg-primary hover:text-dark disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            Save
+                                            {isSaving ? 'Saving...' : 'Save'}
                                         </button>
                                     </div>
+                                    {saveError && (
+                                        <p className="mt-2 text-sm text-red-500">{saveError}</p>
+                                    )}
                                 </div>
                             </div>
                         ))}
