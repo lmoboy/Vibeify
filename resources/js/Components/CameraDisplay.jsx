@@ -9,9 +9,9 @@ export default function CameraDisplay({ onSnapshot }) {
     useEffect(() => {
         navigator.mediaDevices.enumerateDevices().then((devices) => {
             const cameras = devices.filter((device) => device.kind === "videoinput");
-            if(!selectedCameraId)
+            if(!selectedCameraId && cameras.length > 0)
                 setSelectedCameraId(cameras[0].deviceId);
-            
+            console.log(cameras);
             setAvailableCameras(cameras);
         });
 
