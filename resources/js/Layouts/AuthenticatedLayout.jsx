@@ -38,6 +38,13 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     History
                                 </NavLink>
+                                <NavLink
+                                    href={route('favorite.show')}
+                                    active={route().current('favorite.show')}
+                                    className="text-gray-300 hover:text-primary"
+                                >
+                                    Favorites
+                                </NavLink>
                             </div>
                         </div>
 

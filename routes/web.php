@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SpotifyAPI;
 use App\Models\History;
@@ -50,6 +51,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/history/mood/{mood}', [HistoryController::class, 'getByMood'])->name('history.mood');
     Route::delete('/history/{history}', [HistoryController::class, 'destroy'])->name('history.destroy');
 
+    Route::get('/favorite/all', [FavoriteController::class, 'index'])->name('favorite.index');
+    Route::post('/favorite', [FavoriteController::class, 'store'])->name('favorite.store');
+    Route::get('/favorite/mood/{mood}', [FavoriteController::class, 'getByMood'])->name('favorite.mood');
+    Route::delete('/favorite/{favorite}', [FavoriteController::class, 'destroy'])->name('favorite.destroy');
+
     Route::get('/home', [SpotifyAPI::class, 'home'])->name('spotify.home');
     Route::get('/access', [SpotifyAPI::class, 'index'])->name('spotify.access');
 
@@ -57,6 +63,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/history', function () {
         return Inertia::render('History');
     })->name('history.show');
+    Route::get('/favorite', function () {
+        return Inertia::render('Favorite');
+    })->name('favorite.show');
 
 });
 

@@ -45,6 +45,26 @@ export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
         setSaveError(null);
         
         try {
+            await axios.post(route('favorite.store'), {
+                playlist_id: playlist.id,
+                playlist_name: playlist.name,
+                playlist_url: playlist.external_urls.spotify,
+                cover_url: playlist.images[0]?.url || null,
+                mood: emotion[0]
+            });
+            setIsSaving(false);
+        } catch (err) {
+            setSaveError('Failed to save playlist');
+            console.error(err);
+            setIsSaving(false);
+        }
+    };
+
+    const handleVisited = async (playlist) => {
+        setIsSaving(true);
+        setSaveError(null);
+        
+        try {
             await axios.post(route('history.store'), {
                 playlist_id: playlist.id,
                 playlist_name: playlist.name,
@@ -57,6 +77,8 @@ export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
             setSaveError('Failed to save playlist');
             setIsSaving(false);
         }
+        window.open(playlist.external_urls.spotify, '_blank');
+        
     };
 
     return (
@@ -94,14 +116,14 @@ export default function SuggestedPlaylist({ emotion = [], accessKey = "" }) {
                                         </p>
                                     </div>
                                     <div className="mt-4 flex gap-2">
-                                        <a
-                                            href={item.external_urls.spotify}
+                                        <button
+                                            onClick={() => handleVisited(item)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="flex-1 rounded-lg bg-primary px-4 py-2 text-center text-sm font-medium text-dark hover:bg-primary/90"
                                         >
                                             View
-                                        </a>
+                                        </button>
                                         <button
                                             onClick={() => handleSave(item)}
                                             disabled={isSaving}
