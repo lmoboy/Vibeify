@@ -21,6 +21,7 @@ export default function Dashboard() {
     const [exectime, setExectime] = useState(0);
     const [spotifyAccessToken, setSpotifyAccessToken] = useState("");
     const [uploadedFile, setUploadedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(""); // State for image preview
     const fileInputElement = useRef(null);
 
     const emotionToGenresMap = {
@@ -56,8 +57,50 @@ export default function Dashboard() {
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
+    
+        if (!uploadedFile) {
+            alert("Please select an image before submitting.");
+            return;
+        }
+    
         const formData = new FormData();
         formData.append("file", uploadedFile);
+    
+        const startTime = performance.now();
+    
+        fetch("http://127.0.0.1:6969/predict", {
+            method: "POST",
+            body: formData,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Failed to analyze the image.");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const endTime = performance.now();
+                setDetectedEmotion(data);
+                setExectime((endTime - startTime) / 1000);
+            })
+            .catch((error) => {
+                console.error("Error analyzing the image:", error);
+                alert("There was an error analyzing the image. Please try again.");
+            });
+    };
+
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setUploadedFile(file);
+
+            // Generate preview URL
+            const reader = new FileReader();
+            reader.onload = () => {
+                setPreviewUrl(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     useEffect(() => {
@@ -67,9 +110,7 @@ export default function Dashboard() {
     }, []);
 
     return (
-        <AuthenticatedLayout
-            
-        >
+        <AuthenticatedLayout>
             <Head title="Dashboard" />
 
             <div className="py-12">
@@ -84,6 +125,20 @@ export default function Dashboard() {
                                 <CameraDisplay onSnapshot={handleImageSnapshot} />
                             </div>
                             <div className="mt-4 flex items-center justify-between">
+
+                        {/* Image Preview */}
+                        {previewUrl && (
+                        <div className="mt-6 rounded-lg bg-dark-darker p-4">
+                                <h4 className="mb-2 text-gray-300">Uploaded Image:</h4>
+                                    <img
+                                        src={previewUrl}
+                                        alt="Uploaded preview"
+                                        className="w-full rounded-md object-cover"
+                                    />
+                            </div>
+                        )}
+                </div>
+
                                 <button
                                     onClick={() => fileInputElement.current?.click()}
                                     className="rounded-lg border border-primary bg-transparent px-4 py-2 text-primary transition-colors hover:bg-primary hover:text-dark"
@@ -95,15 +150,16 @@ export default function Dashboard() {
                                     ref={fileInputElement}
                                     className="hidden"
                                     accept="image/*"
-                                    onChange={(e) => setUploadedFile(e.target.files[0])}
+                                    onChange={handleImageChange}
                                 />
-                                {exectime > 0 && (
-                                    <span className="text-sm text-gray-400">
-                                        Processing time: {exectime.toFixed(2)}s
-                                    </span>
-                                )}
+                                <button
+                                    onClick={handleFormSubmit}
+                                    className="ml-4 rounded-lg bg-primary px-4 py-2 text-dark transition-colors hover:bg-primary-dark"
+                                >
+                                    Analyze
+                                </button>
                             </div>
-                        </div>
+
 
                         {/* Results Section */}
                         <div className="overflow-hidden rounded-lg bg-dark-lighter p-6 shadow-lg">
@@ -123,16 +179,13 @@ export default function Dashboard() {
                                     <div className="rounded-lg bg-dark-darker p-4">
                                         <h4 className="mb-4 text-gray-300">Suggested Playlists:</h4>
                                         <SuggestedPlaylist
-                                            emotion={emotionToGenresMap[detectedEmotion['result']]}
+                                            emotion={emotionToGenresMap[detectedEmotion["result"]]}
                                             accessKey={spotifyAccessToken}
                                         />
                                     </div>
                                 </div>
                             ) : (
                                 <div className="flex h-[300px] items-center justify-center rounded-lg bg-dark-darker">
-                                    <p className="text-gray-400">
-                                        Take or upload a photo to see your mood analysis
-                                    </p>
                                 </div>
                             )}
                         </div>
